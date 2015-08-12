@@ -35,16 +35,19 @@ def all_managed_policies(conn):
 
     for policy in conn.policies.all():
         for attached_user in policy.attached_users.all():
-            policy = {
-                "name": policy.policy_name,
-                "arn": policy.arn,
-                "version": policy.default_version_id
-            }
+            try:
+                policy = {
+                    "name": policy.policy_name,
+                    "arn": policy.arn,
+                    "version": policy.default_version_id
+                }
 
-            if attached_user.arn not in managed_policies:
-                managed_policies[attached_user.arn] = [policy]
-            else:
-                managed_policies[attached_user.arn].append(policy)
+                if attached_user.arn not in managed_policies:
+                    managed_policies[attached_user.arn] = [policy]
+                else:
+                    managed_policies[attached_user.arn].append(policy)
+            except AttributeError:
+                print "AttributeError for %s." % policy
 
     return managed_policies
 
